@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedido Confirmado - {{appName}}</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .card {
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      margin: 20px 0;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #228be6;
+    }
+    .success-icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+    h1 {
+      color: #40c057;
+      margin-bottom: 10px;
+    }
+    .order-id {
+      color: #868e96;
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .items-table th,
+    .items-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e9ecef;
+    }
+    .items-table th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+    }
+    .items-table .price {
+      text-align: right;
+    }
+    .total-row {
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .total-row td {
+      border-bottom: none;
+      padding-top: 20px;
+    }
+    .button {
+      display: inline-block;
+      background-color: #228be6;
+      color: #ffffff !important;
+      text-decoration: none;
+      padding: 12px 30px;
+      border-radius: 6px;
+      font-weight: 600;
+      margin: 20px 0;
+    }
+    .info-box {
+      background-color: #e7f5ff;
+      border-left: 4px solid #228be6;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 0 6px 6px 0;
+    }
+    .footer {
+      text-align: center;
+      color: #868e96;
+      font-size: 12px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <div class="logo">{{appName}}</div>
+      </div>
+
+      <div style="text-align: center;">
+        <div class="success-icon">&#10004;</div>
+        <h1>Pedido Confirmado!</h1>
+        <p class="order-id">Pedido #{{orderId}}</p>
+      </div>
+
+      <p>Hola <strong>{{customerName}}</strong>,</p>
+
+      <p>Hemos recibido tu pedido y esta siendo procesado. Aqui tienes el resumen:</p>
+
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th class="price">Precio</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each items}}
+          <tr>
+            <td>{{this.name}}</td>
+            <td>{{this.quantity}}</td>
+            <td class="price">${{this.price}}</td>
+          </tr>
+          {{/each}}
+          <tr class="total-row">
+            <td colspan="2">Total</td>
+            <td class="price">${{total}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>Que sigue?</strong>
+        <p style="margin: 10px 0 0 0;">Te notificaremos cuando tu pedido sea confirmado y enviado. Puedes hacer seguimiento en cualquier momento desde tu cuenta.</p>
+      </div>
+
+      <p style="text-align: center;">
+        <a href="{{orderUrl}}" class="button">Ver mi Pedido</a>
+      </p>
+
+      <p>Gracias por tu compra!</p>
+
+      <p>Saludos,<br>El equipo de {{appName}}</p>
+    </div>
+
+    <div class="footer">
+      <p>Este correo fue enviado automaticamente. Por favor no respondas a este mensaje.</p>
+      <p>&copy; {{appName}}. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</body>
+</html>
