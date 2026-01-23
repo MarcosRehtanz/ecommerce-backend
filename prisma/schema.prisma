@@ -42,6 +42,7 @@ model Product {
   description   String
   price         Decimal     @db.Decimal(10, 2)
   originalPrice Decimal?    @db.Decimal(10, 2)
+  featured      Boolean     @default(false)
   stock         Int         @default(0)
   imageUrl      String?
   imageData     String?     @db.Text

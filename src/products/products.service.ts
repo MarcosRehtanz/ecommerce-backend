@@ -13,7 +13,7 @@ export class ProductsService {
     const limit = query.limit || 10;
     const sortBy = query.sortBy || 'createdAt';
     const sortOrder = query.sortOrder || 'desc';
-    const { search, minPrice, maxPrice, inStock, isActive, categoryId, category } = query;
+    const { search, minPrice, maxPrice, inStock, isActive, featured, categoryId, category } = query;
     const skip = (page - 1) * limit;
 
     const where: any = {};
@@ -55,6 +55,11 @@ export class ProductsService {
     // Category filter by slug
     if (category) {
       where.category = { slug: category };
+    }
+
+    // Featured filter
+    if (featured !== undefined) {
+      where.featured = featured;
     }
 
     const [products, total] = await Promise.all([

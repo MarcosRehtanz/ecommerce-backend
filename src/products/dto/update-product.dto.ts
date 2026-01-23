@@ -6,6 +6,7 @@ export const updateProductSchema = z.object({
   description: z.string().min(5, 'La descripción debe tener al menos 5 caracteres').optional(),
   price: z.number().min(0, 'El precio debe ser mayor o igual a 0').optional(),
   originalPrice: z.number().min(0, 'El precio original debe ser mayor o igual a 0').nullable().optional(),
+  featured: z.boolean().optional(),
   stock: z.number().int().min(0, 'El stock debe ser mayor o igual a 0').optional(),
   imageUrl: z.string().url('La URL de imagen no es válida').optional(),
   imageData: z
