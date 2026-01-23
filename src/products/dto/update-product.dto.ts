@@ -5,6 +5,7 @@ export const updateProductSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').optional(),
   description: z.string().min(5, 'La descripción debe tener al menos 5 caracteres').optional(),
   price: z.number().min(0, 'El precio debe ser mayor o igual a 0').optional(),
+  originalPrice: z.number().min(0, 'El precio original debe ser mayor o igual a 0').nullable().optional(),
   stock: z.number().int().min(0, 'El stock debe ser mayor o igual a 0').optional(),
   imageUrl: z.string().url('La URL de imagen no es válida').optional(),
   imageData: z
@@ -31,6 +32,9 @@ export class UpdateProductDtoSwagger {
 
   @ApiProperty({ example: 999.99, required: false })
   price?: number;
+
+  @ApiProperty({ example: 1299.99, required: false })
+  originalPrice?: number | null;
 
   @ApiProperty({ example: 50, required: false })
   stock?: number;

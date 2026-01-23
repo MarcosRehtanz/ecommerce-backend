@@ -37,15 +37,16 @@ model User {
 }
 
 model Product {
-  id          String      @id @default(uuid())
-  name        String      @unique
-  description String
-  price       Decimal     @db.Decimal(10, 2)
-  stock       Int         @default(0)
-  imageUrl    String?
-  imageData   String?     @db.Text
-  isActive    Boolean     @default(true)
-  categoryId  String?
+  id            String      @id @default(uuid())
+  name          String      @unique
+  description   String
+  price         Decimal     @db.Decimal(10, 2)
+  originalPrice Decimal?    @db.Decimal(10, 2)
+  stock         Int         @default(0)
+  imageUrl      String?
+  imageData     String?     @db.Text
+  isActive      Boolean     @default(true)
+  categoryId    String?
   category    Category?   @relation(fields: [categoryId], references: [id])
   cartItems   CartItem[]
   orderItems  OrderItem[]

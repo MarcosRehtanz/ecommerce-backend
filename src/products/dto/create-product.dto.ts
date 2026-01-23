@@ -5,6 +5,7 @@ export const createProductSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
   description: z.string().min(5, 'La descripción debe tener al menos 5 caracteres'),
   price: z.number().min(0, 'El precio debe ser mayor o igual a 0'),
+  originalPrice: z.number().min(0, 'El precio original debe ser mayor o igual a 0').nullable().optional(),
   stock: z.number().int().min(0, 'El stock debe ser mayor o igual a 0'),
   imageUrl: z.string().url('La URL de imagen no es válida').optional(),
   imageData: z
@@ -29,6 +30,9 @@ export class CreateProductDtoSwagger {
 
   @ApiProperty({ example: 999.99 })
   price: number;
+
+  @ApiProperty({ example: 1299.99, required: false })
+  originalPrice?: number | null;
 
   @ApiProperty({ example: 50 })
   stock: number;
