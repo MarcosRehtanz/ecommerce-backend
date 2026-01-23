@@ -32,6 +32,8 @@ export const queryProductsSchema = z.object({
     (val) => (val === 'true' ? true : val === 'false' ? false : undefined),
     z.boolean().optional(),
   ),
+  categoryId: z.string().uuid().optional(),
+  category: z.string().optional(), // slug de la categoría
   sortBy: z.string().default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });
@@ -59,6 +61,12 @@ export class QueryProductsDtoSwagger {
 
   @ApiProperty({ required: false })
   isActive?: boolean;
+
+  @ApiProperty({ required: false, description: 'UUID de la categoría' })
+  categoryId?: string;
+
+  @ApiProperty({ required: false, description: 'Slug de la categoría' })
+  category?: string;
 
   @ApiProperty({ required: false, default: 'createdAt' })
   sortBy?: string;

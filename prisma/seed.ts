@@ -241,6 +241,94 @@ const categories = {
 // USUARIOS
 // ============================================
 
+// ============================================
+// CATEGORÍAS PARA LA BASE DE DATOS
+// ============================================
+
+const categoryDefinitions = [
+  {
+    key: 'electronica',
+    name: 'Electrónica',
+    slug: 'electronica',
+    description: 'Dispositivos electrónicos, gadgets, computadoras, smartphones y más',
+    displayOrder: 1,
+  },
+  {
+    key: 'moda',
+    name: 'Moda',
+    slug: 'moda',
+    description: 'Ropa, calzado y accesorios para hombre y mujer',
+    displayOrder: 2,
+  },
+  {
+    key: 'hogar',
+    name: 'Hogar',
+    slug: 'hogar',
+    description: 'Electrodomésticos, muebles y artículos para el hogar',
+    displayOrder: 3,
+  },
+  {
+    key: 'deportes',
+    name: 'Deportes',
+    slug: 'deportes',
+    description: 'Equipamiento deportivo, fitness y outdoor',
+    displayOrder: 4,
+  },
+  {
+    key: 'belleza',
+    name: 'Belleza',
+    slug: 'belleza',
+    description: 'Skincare, maquillaje, cuidado del cabello y fragancias',
+    displayOrder: 5,
+  },
+];
+
+// ============================================
+// CONFIGURACIONES DEL SITIO
+// ============================================
+
+const siteConfigurations = [
+  {
+    key: 'topbar',
+    value: {
+      message: '¡Envío gratis en compras mayores a $50! 🚚',
+      isVisible: true,
+      backgroundColor: '#1a1a2e',
+      textColor: '#ffffff',
+    },
+  },
+  {
+    key: 'hero',
+    value: {
+      title: 'Descubre lo Mejor en Tecnología y Moda',
+      subtitle: 'Encuentra productos de las mejores marcas con envío gratis y garantía de satisfacción',
+      primaryButtonText: 'Ver Productos',
+      primaryButtonLink: '/productos',
+      secondaryButtonText: 'Ofertas Especiales',
+      secondaryButtonLink: '/ofertas',
+      backgroundImage: null,
+      isVisible: true,
+    },
+  },
+  {
+    key: 'special-offer',
+    value: {
+      title: '¡Oferta Especial de Temporada!',
+      subtitle: 'Hasta 40% de descuento en productos seleccionados',
+      description: 'Aprovecha nuestras ofertas exclusivas por tiempo limitado. ¡No te lo pierdas!',
+      buttonText: 'Ver Ofertas',
+      buttonLink: '/ofertas',
+      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 días desde ahora
+      isVisible: true,
+      backgroundColor: '#f8f9fa',
+    },
+  },
+];
+
+// ============================================
+// USUARIOS
+// ============================================
+
 const users = [
   { email: 'admin@example.com', name: 'Administrador', password: 'Admin123!', role: 'ADMIN' as Role },
   { email: 'manager@example.com', name: 'Manager', password: 'Manager123!', role: 'ADMIN' as Role },
@@ -287,8 +375,43 @@ async function main() {
   await prisma.cartItem.deleteMany();
   await prisma.cart.deleteMany();
   await prisma.product.deleteMany();
+  await prisma.category.deleteMany();
+  await prisma.siteConfig.deleteMany();
+  await prisma.newsletterSubscription.deleteMany();
   await prisma.user.deleteMany();
   console.log('✓ Datos limpiados\n');
+
+  // Crear categorías
+  console.log('📂 Creando categorías...');
+  const createdCategories: Record<string, any> = {};
+  for (const catDef of categoryDefinitions) {
+    const category = await prisma.category.create({
+      data: {
+        name: catDef.name,
+        slug: catDef.slug,
+        description: catDef.description,
+        displayOrder: catDef.displayOrder,
+        isActive: true,
+      },
+    });
+    createdCategories[catDef.key] = category;
+    console.log(`  ✓ ${category.name}`);
+  }
+  console.log(`✓ ${categoryDefinitions.length} categorías creadas\n`);
+
+  // Crear configuraciones del sitio
+  console.log('⚙️ Creando configuraciones del sitio...');
+  for (const config of siteConfigurations) {
+    await prisma.siteConfig.create({
+      data: {
+        key: config.key,
+        value: config.value,
+        isActive: true,
+      },
+    });
+    console.log(`  ✓ ${config.key}`);
+  }
+  console.log(`✓ ${siteConfigurations.length} configuraciones creadas\n`);
 
   // Crear usuarios
   console.log('👥 Creando usuarios...');
@@ -315,6 +438,7 @@ async function main() {
 
   for (const [categoryKey, category] of Object.entries(categories)) {
     console.log(`\n  📁 Categoría: ${category.name}`);
+    const categoryId = createdCategories[categoryKey]?.id;
 
     for (const productData of category.products) {
       const product = await prisma.product.create({
@@ -325,6 +449,7 @@ async function main() {
           stock: productData.stock,
           imageUrl: `https://placehold.co/400x400?text=${encodeURIComponent(productData.name.substring(0, 20))}`,
           isActive: productData.stock > 0 || Math.random() > 0.3, // Algunos inactivos
+          categoryId: categoryId,
         },
       });
       createdProducts.push(product);
@@ -393,12 +518,16 @@ async function main() {
      - Admins:    ${createdUsers.filter(u => u.role === 'ADMIN').length}
      - Users:     ${createdUsers.filter(u => u.role === 'USER').length}
 
+  📂 Categorías:  ${categoryDefinitions.length}
+
   📦 Productos:   ${productCount}
      - Electrónica: ${categories.electronica.products.length}
      - Moda:        ${categories.moda.products.length}
      - Hogar:       ${categories.hogar.products.length}
      - Deportes:    ${categories.deportes.products.length}
      - Belleza:     ${categories.belleza.products.length}
+
+  ⚙️ Configs:     ${siteConfigurations.length}
 
   🛒 Órdenes:     ${orderCount}
   ─────────────────────────────

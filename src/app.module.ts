@@ -11,6 +11,9 @@ import { CartModule } from './cart/cart.module';
 import { OrdersModule } from './orders/orders.module';
 import { ReportsModule } from './reports/reports.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { CategoriesModule } from './categories/categories.module';
+import { SiteConfigModule } from './site-config/site-config.module';
+import { NewsletterModule } from './newsletter/newsletter.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { LoggingInterceptor } from './common/interceptors';
@@ -28,6 +31,9 @@ import { LoggingInterceptor } from './common/interceptors';
     OrdersModule,
     ReportsModule,
     NotificationsModule,
+    CategoriesModule,
+    SiteConfigModule,
+    NewsletterModule,
   ],
   controllers: [AppController],
   providers: [

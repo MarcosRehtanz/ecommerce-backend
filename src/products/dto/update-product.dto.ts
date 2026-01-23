@@ -17,6 +17,7 @@ export const updateProductSchema = z.object({
     .nullable()
     .optional(),
   isActive: z.boolean().optional(),
+  categoryId: z.string().uuid('El ID de categoría debe ser un UUID válido').nullable().optional(),
 });
 
 export type UpdateProductDto = z.infer<typeof updateProductSchema>;
@@ -42,4 +43,7 @@ export class UpdateProductDtoSwagger {
 
   @ApiProperty({ example: true, required: false })
   isActive?: boolean;
+
+  @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000', required: false })
+  categoryId?: string | null;
 }

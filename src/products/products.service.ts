@@ -13,7 +13,7 @@ export class ProductsService {
     const limit = query.limit || 10;
     const sortBy = query.sortBy || 'createdAt';
     const sortOrder = query.sortOrder || 'desc';
-    const { search, minPrice, maxPrice, inStock, isActive } = query;
+    const { search, minPrice, maxPrice, inStock, isActive, categoryId, category } = query;
     const skip = (page - 1) * limit;
 
     const where: any = {};
@@ -47,12 +47,27 @@ export class ProductsService {
       where.isActive = isActive;
     }
 
+    // Category filter by ID
+    if (categoryId) {
+      where.categoryId = categoryId;
+    }
+
+    // Category filter by slug
+    if (category) {
+      where.category = { slug: category };
+    }
+
     const [products, total] = await Promise.all([
       this.prisma.product.findMany({
         where,
         skip,
         take: limit,
         orderBy: { [sortBy]: sortOrder },
+        include: {
+          category: {
+            select: { id: true, name: true, slug: true },
+          },
+        },
       }),
       this.prisma.product.count({ where }),
     ]);
@@ -76,6 +91,11 @@ export class ProductsService {
   async findOne(id: string) {
     const product = await this.prisma.product.findUnique({
       where: { id },
+      include: {
+        category: {
+          select: { id: true, name: true, slug: true },
+        },
+      },
     });
 
     if (!product) {
@@ -88,6 +108,11 @@ export class ProductsService {
   async findOnePublic(id: string) {
     const product = await this.prisma.product.findUnique({
       where: { id, isActive: true },
+      include: {
+        category: {
+          select: { id: true, name: true, slug: true },
+        },
+      },
     });
 
     if (!product) {
