@@ -39,7 +39,7 @@ export class SiteConfigService {
   }
 
   async getHomepageConfig() {
-    const keys = ['topbar', 'hero', 'special-offer'];
+    const keys = ['general', 'topbar', 'hero', 'special-offer'];
 
     const configs = await this.prisma.siteConfig.findMany({
       where: {
