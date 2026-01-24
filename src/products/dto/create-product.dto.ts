@@ -17,7 +17,7 @@ export const createProductSchema = z.object({
     )
     .max(3000000, 'La imagen no debe superar 2MB')
     .optional(),
-  categoryId: z.string().uuid('El ID de categoría debe ser un UUID válido').optional(),
+  categoryId: z.string().uuid('El ID de categoría debe ser un UUID válido').nullable().optional(),
 });
 
 export type CreateProductDto = z.infer<typeof createProductSchema>;

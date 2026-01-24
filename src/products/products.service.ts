@@ -141,6 +141,11 @@ export class ProductsService {
     const product = await this.prisma.product.update({
       where: { id },
       data: dto,
+      include: {
+        category: {
+          select: { id: true, name: true, slug: true },
+        },
+      },
     });
 
     return product;
