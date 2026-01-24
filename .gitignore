@@ -67,6 +67,7 @@ tmp/
 temp/
 .tmp/
 .temp/
+seed_output.txt
 
 # Debug
 .debug/
