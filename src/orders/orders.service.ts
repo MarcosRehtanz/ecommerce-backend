@@ -7,7 +7,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { CreateOrderDto, UpdateOrderStatusDto, QueryOrdersDto } from './dto';
-import { OrderStatus } from '@prisma/client';
+import { OrderStatus, PaymentStatus } from '@prisma/client';
 
 const statusLabels: Record<OrderStatus, string> = {
   PENDING: 'Pendiente',
@@ -28,6 +28,22 @@ export class OrdersService {
    * Create order from user's cart
    */
   async createFromCart(userId: string, dto: CreateOrderDto) {
+    // Check if user already has a pending unpaid order
+    const existingPendingOrder = await this.prisma.order.findFirst({
+      where: {
+        userId,
+        status: OrderStatus.PENDING,
+        paymentStatus: PaymentStatus.PENDING,
+      },
+    });
+
+    if (existingPendingOrder) {
+      throw new BadRequestException(
+        `Ya tienes un pedido pendiente de pago (#${existingPendingOrder.id.slice(0, 8)}). ` +
+        'Debes pagarlo o cancelarlo antes de crear otro pedido.'
+      );
+    }
+
     // Get user's cart with items
     const cart = await this.prisma.cart.findUnique({
       where: { userId },
@@ -65,13 +81,17 @@ export class OrdersService {
     );
 
     // Create order with items in a transaction
+    // Note: Stock is NOT decremented here. It will be decremented when payment is confirmed.
+    // Note: Cart is NOT cleared here. It will be cleared when payment is confirmed.
+    // Email is NOT sent here. It will be sent when payment is confirmed.
     const order = await this.prisma.$transaction(async (tx) => {
-      // Create order
+      // Create order with paymentStatus PENDING
       const newOrder = await tx.order.create({
         data: {
           userId,
           total,
           status: OrderStatus.PENDING,
+          paymentStatus: PaymentStatus.PENDING,
           items: {
             create: cart.items.map((item) => ({
               productId: item.productId,
@@ -96,45 +116,8 @@ export class OrdersService {
         },
       });
 
-      // Update product stock
-      for (const item of cart.items) {
-        await tx.product.update({
-          where: { id: item.productId },
-          data: {
-            stock: {
-              decrement: item.quantity,
-            },
-          },
-        });
-      }
-
-      // Clear cart
-      await tx.cartItem.deleteMany({
-        where: { cartId: cart.id },
-      });
-
       return newOrder;
     });
-
-    // Send order confirmation email
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      select: { name: true, email: true },
-    });
-
-    if (user) {
-      this.notifications.sendOrderConfirmation({
-        orderId: order.id,
-        customerName: user.name,
-        customerEmail: user.email,
-        total: Number(order.total),
-        items: order.items.map((item) => ({
-          name: item.product.name,
-          quantity: item.quantity,
-          price: Number(item.price),
-        })),
-      });
-    }
 
     return order;
   }
@@ -245,24 +228,29 @@ export class OrdersService {
       );
     }
 
-    // Cancel order and restore stock
+    // Cancel order and restore stock only if payment was approved
     const updatedOrder = await this.prisma.$transaction(async (tx) => {
-      // Restore product stock
-      for (const item of order.items) {
-        await tx.product.update({
-          where: { id: item.productId },
-          data: {
-            stock: {
-              increment: item.quantity,
+      // Only restore stock if payment was approved (stock was decremented)
+      if (order.paymentStatus === PaymentStatus.APPROVED) {
+        for (const item of order.items) {
+          await tx.product.update({
+            where: { id: item.productId },
+            data: {
+              stock: {
+                increment: item.quantity,
+              },
             },
-          },
-        });
+          });
+        }
       }
 
       // Update order status
       return tx.order.update({
         where: { id: orderId },
-        data: { status: OrderStatus.CANCELLED },
+        data: {
+          status: OrderStatus.CANCELLED,
+          paymentStatus: PaymentStatus.CANCELLED,
+        },
         include: {
           items: {
             include: {
@@ -406,25 +394,39 @@ export class OrdersService {
       );
     }
 
+    // Block confirmation if payment is not approved
+    if (dto.status === OrderStatus.CONFIRMED && order.paymentStatus !== PaymentStatus.APPROVED) {
+      throw new BadRequestException(
+        'No se puede confirmar un pedido que no ha sido pagado. ' +
+        'El pago debe estar aprobado antes de confirmar el pedido.'
+      );
+    }
+
     let updatedOrder;
 
-    // If cancelling, restore stock
+    // If cancelling, restore stock only if payment was approved
     if (dto.status === OrderStatus.CANCELLED) {
       updatedOrder = await this.prisma.$transaction(async (tx) => {
-        for (const item of order.items) {
-          await tx.product.update({
-            where: { id: item.productId },
-            data: {
-              stock: {
-                increment: item.quantity,
+        // Only restore stock if payment was approved (stock was decremented)
+        if (order.paymentStatus === PaymentStatus.APPROVED) {
+          for (const item of order.items) {
+            await tx.product.update({
+              where: { id: item.productId },
+              data: {
+                stock: {
+                  increment: item.quantity,
+                },
               },
-            },
-          });
+            });
+          }
         }
 
         return tx.order.update({
           where: { id: orderId },
-          data: { status: dto.status },
+          data: {
+            status: dto.status,
+            paymentStatus: PaymentStatus.CANCELLED,
+          },
           include: {
             user: {
               select: {
@@ -507,6 +509,8 @@ export class OrdersService {
       shippedOrders,
       deliveredOrders,
       cancelledOrders,
+      pendingPayment,
+      approvedPayment,
       totalRevenue,
     ] = await Promise.all([
       this.prisma.order.count(),
@@ -515,6 +519,13 @@ export class OrdersService {
       this.prisma.order.count({ where: { status: OrderStatus.SHIPPED } }),
       this.prisma.order.count({ where: { status: OrderStatus.DELIVERED } }),
       this.prisma.order.count({ where: { status: OrderStatus.CANCELLED } }),
+      this.prisma.order.count({
+        where: {
+          paymentStatus: PaymentStatus.PENDING,
+          status: { not: OrderStatus.CANCELLED },
+        }
+      }),
+      this.prisma.order.count({ where: { paymentStatus: PaymentStatus.APPROVED } }),
       this.prisma.order.aggregate({
         where: {
           status: {
@@ -535,6 +546,10 @@ export class OrdersService {
         shipped: shippedOrders,
         delivered: deliveredOrders,
         cancelled: cancelledOrders,
+      },
+      byPayment: {
+        pending: pendingPayment,
+        approved: approvedPayment,
       },
       totalRevenue: Number(totalRevenue._sum.total) || 0,
     };

@@ -173,4 +173,55 @@ export class ProductsService {
       data: { stock: product.stock + quantity },
     });
   }
+
+  /**
+   * Get best selling products based on order history
+   * Returns products in the same format as findAll for consistency
+   */
+  async findBestSellers(limit: number = 10) {
+    // Get top selling product IDs from completed orders
+    const topProducts = await this.prisma.orderItem.groupBy({
+      by: ['productId'],
+      _sum: {
+        quantity: true,
+      },
+      where: {
+        order: {
+          status: {
+            in: ['CONFIRMED', 'SHIPPED', 'DELIVERED'],
+          },
+        },
+      },
+      orderBy: {
+        _sum: {
+          quantity: 'desc',
+        },
+      },
+      take: limit,
+    });
+
+    if (topProducts.length === 0) {
+      // Fallback: return featured products if no sales yet
+      return this.prisma.product.findMany({
+        where: { isActive: true, featured: true },
+        include: { category: true },
+        take: limit,
+      });
+    }
+
+    // Get full product details maintaining the order
+    const productIds = topProducts.map((p) => p.productId);
+    const products = await this.prisma.product.findMany({
+      where: {
+        id: { in: productIds },
+        isActive: true,
+      },
+      include: { category: true },
+    });
+
+    // Sort by sales order
+    return productIds
+      .map((id) => products.find((p) => p.id === id))
+      .filter((p): p is NonNullable<typeof p> => p !== undefined);
+  }
 }

@@ -7,6 +7,299 @@ const prisma = new PrismaClient();
 // DATOS DE PRODUCTOS POR CATEGORÍA
 // ============================================
 
+// URLs de imágenes reales de Unsplash por categoría/tipo
+const productImages = {
+  // Laptops
+  laptop: [
+    'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&h=400&fit=crop',
+  ],
+  // Smartphones
+  smartphone: [
+    'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1605236453806-6ff36851218e?w=400&h=400&fit=crop',
+  ],
+  // Tablets
+  tablet: [
+    'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1561154464-82e9adf32764?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?w=400&h=400&fit=crop',
+  ],
+  // Auriculares
+  headphones: [
+    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&h=400&fit=crop',
+  ],
+  // Earbuds
+  earbuds: [
+    'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=400&h=400&fit=crop',
+  ],
+  // Smartwatches
+  smartwatch: [
+    'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1617043786394-f977fa12eddf?w=400&h=400&fit=crop',
+  ],
+  // Monitores
+  monitor: [
+    'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1616763355548-1b606f439f86?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=400&h=400&fit=crop',
+  ],
+  // Consolas
+  console: [
+    'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1605901309584-818e25960a8f?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=400&h=400&fit=crop',
+  ],
+  // Gaming accessories
+  gaming: [
+    'https://images.unsplash.com/photo-1612801799890-4ba4760b6590?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1618499890638-3a0dd4b278cd?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1625805866449-3589fe3f71a3?w=400&h=400&fit=crop',
+  ],
+  // Ropa - camisetas
+  tshirt: [
+    'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1562157873-818bc0726f68?w=400&h=400&fit=crop',
+  ],
+  // Pantalones
+  pants: [
+    'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&h=400&fit=crop',
+  ],
+  // Zapatillas
+  sneakers: [
+    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&h=400&fit=crop',
+  ],
+  // Sudaderas/Hoodies
+  hoodie: [
+    'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=400&h=400&fit=crop',
+  ],
+  // Chaquetas
+  jacket: [
+    'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1544923246-77307dd628b0?w=400&h=400&fit=crop',
+  ],
+  // Aspiradoras
+  vacuum: [
+    'https://images.unsplash.com/photo-1558317374-067fb5f30001?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1567690187548-f07b1d7bf5a9?w=400&h=400&fit=crop',
+  ],
+  // Cocina
+  kitchen: [
+    'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1585515320310-259814833e62?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=400&h=400&fit=crop',
+  ],
+  // Smart home
+  smarthome: [
+    'https://images.unsplash.com/photo-1558089687-f282ffcbc126?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=400&h=400&fit=crop',
+  ],
+  // Muebles
+  furniture: [
+    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=400&h=400&fit=crop',
+  ],
+  // Fitness
+  fitness: [
+    'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1576678927484-cc907957088c?w=400&h=400&fit=crop',
+  ],
+  // Running
+  running: [
+    'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1539185441755-769473a23570?w=400&h=400&fit=crop',
+  ],
+  // Ciclismo
+  cycling: [
+    'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=400&h=400&fit=crop',
+  ],
+  // Outdoor
+  outdoor: [
+    'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1478827536114-da961b7f86d2?w=400&h=400&fit=crop',
+  ],
+  // Skincare
+  skincare: [
+    'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1570194065650-d99fb4b38b17?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1612817288484-6f916006741a?w=400&h=400&fit=crop',
+  ],
+  // Maquillaje
+  makeup: [
+    'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&h=400&fit=crop',
+  ],
+  // Cabello
+  haircare: [
+    'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&h=400&fit=crop',
+  ],
+  // Perfumes
+  perfume: [
+    'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400&h=400&fit=crop',
+  ],
+};
+
+// Función para obtener imagen según el nombre del producto
+function getProductImage(productName: string, categoryKey: string): string {
+  const name = productName.toLowerCase();
+
+  // Electrónica
+  if (name.includes('macbook') || name.includes('laptop') || name.includes('thinkpad') ||
+      name.includes('xps') || name.includes('spectre') || name.includes('surface') ||
+      name.includes('swift') || name.includes('pavilion') || name.includes('zephyrus') ||
+      name.includes('blade') || name.includes('rog')) {
+    return productImages.laptop[Math.floor(Math.random() * productImages.laptop.length)];
+  }
+  if (name.includes('iphone') || name.includes('galaxy s') || name.includes('pixel') ||
+      name.includes('oneplus') || name.includes('xiaomi')) {
+    return productImages.smartphone[Math.floor(Math.random() * productImages.smartphone.length)];
+  }
+  if (name.includes('ipad') || name.includes('tab s')) {
+    return productImages.tablet[Math.floor(Math.random() * productImages.tablet.length)];
+  }
+  if (name.includes('airpods pro') || name.includes('buds') || name.includes('wf-')) {
+    return productImages.earbuds[Math.floor(Math.random() * productImages.earbuds.length)];
+  }
+  if (name.includes('airpods max') || name.includes('wh-') || name.includes('quietcomfort') ||
+      name.includes('beats') || name.includes('arctis')) {
+    return productImages.headphones[Math.floor(Math.random() * productImages.headphones.length)];
+  }
+  if (name.includes('watch')) {
+    return productImages.smartwatch[Math.floor(Math.random() * productImages.smartwatch.length)];
+  }
+  if (name.includes('monitor') || name.includes('ultragear') || name.includes('odyssey') ||
+      name.includes('ultrasharp') || name.includes('proart')) {
+    return productImages.monitor[Math.floor(Math.random() * productImages.monitor.length)];
+  }
+  if (name.includes('playstation') || name.includes('xbox') || name.includes('nintendo') ||
+      name.includes('switch')) {
+    return productImages.console[Math.floor(Math.random() * productImages.console.length)];
+  }
+  if (name.includes('dualsense') || name.includes('controller') || name.includes('teclado') ||
+      name.includes('mouse') || name.includes('blackwidow')) {
+    return productImages.gaming[Math.floor(Math.random() * productImages.gaming.length)];
+  }
+
+  // Moda
+  if (name.includes('camiseta') || name.includes('polo')) {
+    return productImages.tshirt[Math.floor(Math.random() * productImages.tshirt.length)];
+  }
+  if (name.includes('jean') || name.includes('pantalón') || name.includes('jogger') ||
+      name.includes('chino')) {
+    return productImages.pants[Math.floor(Math.random() * productImages.pants.length)];
+  }
+  if (name.includes('nike') || name.includes('adidas') || name.includes('jordan') ||
+      name.includes('new balance') || name.includes('converse') || name.includes('vans') ||
+      name.includes('puma') || name.includes('reebok') || name.includes('zapatilla')) {
+    if (categoryKey === 'moda') {
+      return productImages.sneakers[Math.floor(Math.random() * productImages.sneakers.length)];
+    }
+  }
+  if (name.includes('hoodie') || name.includes('sudadera')) {
+    return productImages.hoodie[Math.floor(Math.random() * productImages.hoodie.length)];
+  }
+  if (name.includes('chaqueta') || name.includes('bomber') || name.includes('parka') ||
+      name.includes('nuptse') || name.includes('windrunner')) {
+    return productImages.jacket[Math.floor(Math.random() * productImages.jacket.length)];
+  }
+
+  // Hogar
+  if (name.includes('dyson') || name.includes('roomba') || name.includes('roborock') ||
+      name.includes('aspiradora') || name.includes('vacuum')) {
+    return productImages.vacuum[Math.floor(Math.random() * productImages.vacuum.length)];
+  }
+  if (name.includes('ninja') || name.includes('instant pot') || name.includes('kitchenaid') ||
+      name.includes('nespresso') || name.includes('airfryer') || name.includes('vitamix') ||
+      name.includes('thermomix') || name.includes('weber')) {
+    return productImages.kitchen[Math.floor(Math.random() * productImages.kitchen.length)];
+  }
+  if (name.includes('echo') || name.includes('nest') || name.includes('hue') ||
+      name.includes('ring') || name.includes('thermostat') || name.includes('smart lock')) {
+    return productImages.smarthome[Math.floor(Math.random() * productImages.smarthome.length)];
+  }
+  if (name.includes('silla') || name.includes('escritorio') || name.includes('sofá') ||
+      name.includes('mesa') || name.includes('estantería') || name.includes('herman miller')) {
+    return productImages.furniture[Math.floor(Math.random() * productImages.furniture.length)];
+  }
+
+  // Deportes
+  if (name.includes('mancuerna') || name.includes('bicicleta estática') || name.includes('cinta') ||
+      name.includes('banco') || name.includes('kettlebell') || name.includes('banda') ||
+      name.includes('colchoneta') || name.includes('trx') || name.includes('peloton')) {
+    return productImages.fitness[Math.floor(Math.random() * productImages.fitness.length)];
+  }
+  if (name.includes('vaporfly') || name.includes('adizero') || name.includes('kayano') ||
+      name.includes('forerunner') || name.includes('coros')) {
+    return productImages.running[Math.floor(Math.random() * productImages.running.length)];
+  }
+  if (name.includes('trek') || name.includes('specialized') || name.includes('casco') ||
+      name.includes('ciclocomputador') || name.includes('ciclismo')) {
+    return productImages.cycling[Math.floor(Math.random() * productImages.cycling.length)];
+  }
+  if (name.includes('tienda') || name.includes('saco') || name.includes('mochila') ||
+      name.includes('bastones') || name.includes('botas')) {
+    return productImages.outdoor[Math.floor(Math.random() * productImages.outdoor.length)];
+  }
+
+  // Belleza
+  if (name.includes('serum') || name.includes('crema') || name.includes('protector') ||
+      name.includes('retinol') || name.includes('vitamina c') || name.includes('limpiador') ||
+      name.includes('tónico') || name.includes('mascarilla')) {
+    return productImages.skincare[Math.floor(Math.random() * productImages.skincare.length)];
+  }
+  if (name.includes('base') || name.includes('corrector') || name.includes('paleta') ||
+      name.includes('máscara') || name.includes('labial') || name.includes('iluminador')) {
+    return productImages.makeup[Math.floor(Math.random() * productImages.makeup.length)];
+  }
+  if (name.includes('shampoo') || name.includes('acondicionador') || name.includes('tratamiento') ||
+      name.includes('aceite') || name.includes('secador') || name.includes('plancha') ||
+      name.includes('olaplex') || name.includes('moroccanoil') || name.includes('ghd')) {
+    return productImages.haircare[Math.floor(Math.random() * productImages.haircare.length)];
+  }
+  if (name.includes('perfume') || name.includes('chanel') || name.includes('dior') ||
+      name.includes('ysl') || name.includes('fragancia')) {
+    return productImages.perfume[Math.floor(Math.random() * productImages.perfume.length)];
+  }
+
+  // Default por categoría
+  const defaults: Record<string, string[]> = {
+    electronica: productImages.laptop,
+    moda: productImages.sneakers,
+    hogar: productImages.kitchen,
+    deportes: productImages.fitness,
+    belleza: productImages.skincare,
+  };
+
+  const categoryImages = defaults[categoryKey] || productImages.laptop;
+  return categoryImages[Math.floor(Math.random() * categoryImages.length)];
+}
+
 const categories = {
   electronica: {
     name: 'Electrónica',
@@ -447,7 +740,7 @@ async function main() {
           description: productData.description,
           price: productData.price,
           stock: productData.stock,
-          imageUrl: `https://placehold.co/400x400?text=${encodeURIComponent(productData.name.substring(0, 20))}`,
+          imageUrl: getProductImage(productData.name, categoryKey),
           isActive: productData.stock > 0 || Math.random() > 0.3, // Algunos inactivos
           categoryId: categoryId,
         },

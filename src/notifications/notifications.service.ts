@@ -33,8 +33,14 @@ export class NotificationsService {
   private templates: Map<string, handlebars.TemplateDelegate> = new Map();
 
   constructor(private configService: ConfigService) {
+    this.registerHelpers();
     this.initializeTransporter();
     this.loadTemplates();
+  }
+
+  private registerHelpers() {
+    // Helper para comparaciones de igualdad
+    handlebars.registerHelper('eq', (a: unknown, b: unknown) => a === b);
   }
 
   private initializeTransporter() {
@@ -187,9 +193,9 @@ export class NotificationsService {
    */
   async sendOrderStatusUpdate(data: OrderEmailData): Promise<boolean> {
     const statusMessages: Record<string, string> = {
-      CONFIRMED: 'Tu pedido ha sido confirmado y esta siendo preparado.',
-      SHIPPED: 'Tu pedido ha sido enviado y esta en camino.',
-      DELIVERED: 'Tu pedido ha sido entregado. Gracias por tu compra!',
+      CONFIRMED: 'Tu pedido ha sido confirmado y está siendo preparado.',
+      SHIPPED: 'Tu pedido ha sido enviado y está en camino.',
+      DELIVERED: '¡Tu pedido ha sido entregado! Gracias por tu compra.',
       CANCELLED: 'Tu pedido ha sido cancelado.',
     };
 

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
@@ -15,6 +16,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { CategoriesModule } from './categories/categories.module';
 import { SiteConfigModule } from './site-config/site-config.module';
 import { NewsletterModule } from './newsletter/newsletter.module';
+import { PaymentsModule } from './payments/payments.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { LoggingInterceptor } from './common/interceptors';
@@ -24,6 +26,7 @@ import { LoggingInterceptor } from './common/interceptors';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([
       {
         name: 'short',
@@ -52,6 +55,7 @@ import { LoggingInterceptor } from './common/interceptors';
     CategoriesModule,
     SiteConfigModule,
     NewsletterModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [

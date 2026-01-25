@@ -3,206 +3,85 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Actualizacion de Pedido - {{appName}}</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      line-height: 1.6;
-      color: #333;
-      margin: 0;
-      padding: 0;
-      background-color: #f5f5f5;
-    }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    .card {
-      background-color: #ffffff;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      padding: 40px;
-      margin: 20px 0;
-    }
-    .header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .logo {
-      font-size: 28px;
-      font-weight: bold;
-      color: #228be6;
-    }
-    h1 {
-      color: #333;
-      margin-bottom: 10px;
-    }
-    .order-id {
-      color: #868e96;
-      font-size: 14px;
-      margin-bottom: 30px;
-    }
-    .status-badge {
-      display: inline-block;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-weight: 600;
-      font-size: 14px;
-      margin: 10px 0;
-    }
-    .status-CONFIRMED {
-      background-color: #d0ebff;
-      color: #1971c2;
-    }
-    .status-SHIPPED {
-      background-color: #c3fae8;
-      color: #0ca678;
-    }
-    .status-DELIVERED {
-      background-color: #d3f9d8;
-      color: #2f9e44;
-    }
-    .status-CANCELLED {
-      background-color: #ffe3e3;
-      color: #e03131;
-    }
-    .status-message {
-      background-color: #f8f9fa;
-      padding: 20px;
-      border-radius: 8px;
-      margin: 20px 0;
-      text-align: center;
-    }
-    .timeline {
-      margin: 30px 0;
-      padding: 0;
-      list-style: none;
-    }
-    .timeline li {
-      position: relative;
-      padding-left: 30px;
-      padding-bottom: 20px;
-      border-left: 2px solid #e9ecef;
-    }
-    .timeline li:last-child {
-      border-left: 2px solid transparent;
-      padding-bottom: 0;
-    }
-    .timeline li::before {
-      content: '';
-      position: absolute;
-      left: -8px;
-      top: 0;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background-color: #e9ecef;
-    }
-    .timeline li.active::before {
-      background-color: #228be6;
-    }
-    .timeline li.completed::before {
-      background-color: #40c057;
-    }
-    .items-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-    }
-    .items-table th,
-    .items-table td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #e9ecef;
-    }
-    .items-table th {
-      background-color: #f8f9fa;
-      font-weight: 600;
-    }
-    .items-table .price {
-      text-align: right;
-    }
-    .total-row {
-      font-weight: bold;
-    }
-    .total-row td {
-      border-bottom: none;
-    }
-    .button {
-      display: inline-block;
-      background-color: #228be6;
-      color: #ffffff !important;
-      text-decoration: none;
-      padding: 12px 30px;
-      border-radius: 6px;
-      font-weight: 600;
-      margin: 20px 0;
-    }
-    .footer {
-      text-align: center;
-      color: #868e96;
-      font-size: 12px;
-      margin-top: 30px;
-    }
-  </style>
+  <title>Actualización de Pedido - {{appName}}</title>
 </head>
-<body>
-  <div class="container">
-    <div class="card">
-      <div class="header">
-        <div class="logo">{{appName}}</div>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; background-color: #f5f5f5;">
+  <!-- Preheader text (preview en bandeja de entrada) -->
+  <div style="display: none; max-height: 0; overflow: hidden;">
+    Tu pedido #{{orderId}} ha sido actualizado: {{statusLabel}}
+  </div>
+
+  <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); padding: 40px; margin: 20px 0;">
+      <!-- Header con logo -->
+      <div style="text-align: center; margin-bottom: 30px;">
+        <div style="font-size: 28px; font-weight: bold; color: #228be6;">{{appName}}</div>
       </div>
 
       <div style="text-align: center;">
-        <h1>Actualizacion de Pedido</h1>
-        <p class="order-id">Pedido #{{orderId}}</p>
-        <span class="status-badge status-{{status}}">{{statusLabel}}</span>
+        <h1 style="color: #333333; margin: 0 0 10px 0;">Actualización de Pedido</h1>
+        <p style="color: #868e96; font-size: 14px; margin: 0 0 16px 0;">Pedido #{{orderId}}</p>
+
+        <!-- Status badge con colores condicionales -->
+        {{#if (eq status "CONFIRMED")}}
+        <span style="display: inline-block; padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 14px; background-color: #d0ebff; color: #1971c2;">{{statusLabel}}</span>
+        {{/if}}
+        {{#if (eq status "SHIPPED")}}
+        <span style="display: inline-block; padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 14px; background-color: #c3fae8; color: #0ca678;">{{statusLabel}}</span>
+        {{/if}}
+        {{#if (eq status "DELIVERED")}}
+        <span style="display: inline-block; padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 14px; background-color: #d3f9d8; color: #2f9e44;">{{statusLabel}}</span>
+        {{/if}}
+        {{#if (eq status "CANCELLED")}}
+        <span style="display: inline-block; padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 14px; background-color: #ffe3e3; color: #e03131;">{{statusLabel}}</span>
+        {{/if}}
       </div>
 
-      <p>Hola <strong>{{customerName}}</strong>,</p>
+      <p style="margin: 24px 0 16px 0;">Hola <strong>{{customerName}}</strong>,</p>
 
-      <div class="status-message">
+      <!-- Status message box -->
+      <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
         <p style="margin: 0; font-size: 16px;">{{statusMessage}}</p>
       </div>
 
-      <h3>Resumen del pedido</h3>
+      <h3 style="margin: 24px 0 16px 0; color: #333333;">Resumen del pedido</h3>
 
-      <table class="items-table">
+      <!-- Tabla de productos -->
+      <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
         <thead>
           <tr>
-            <th>Producto</th>
-            <th>Cantidad</th>
-            <th class="price">Precio</th>
+            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e9ecef; background-color: #f8f9fa; font-weight: 600;">Producto</th>
+            <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e9ecef; background-color: #f8f9fa; font-weight: 600;">Cantidad</th>
+            <th style="padding: 12px; text-align: right; border-bottom: 2px solid #e9ecef; background-color: #f8f9fa; font-weight: 600;">Precio</th>
           </tr>
         </thead>
         <tbody>
           {{#each items}}
           <tr>
-            <td>{{this.name}}</td>
-            <td>{{this.quantity}}</td>
-            <td class="price">${{this.price}}</td>
+            <td style="padding: 12px; text-align: left; border-bottom: 1px solid #e9ecef;">{{this.name}}</td>
+            <td style="padding: 12px; text-align: center; border-bottom: 1px solid #e9ecef;">{{this.quantity}}</td>
+            <td style="padding: 12px; text-align: right; border-bottom: 1px solid #e9ecef;">${{this.price}}</td>
           </tr>
           {{/each}}
-          <tr class="total-row">
-            <td colspan="2">Total</td>
-            <td class="price">${{total}}</td>
+          <tr>
+            <td colspan="2" style="padding: 16px 12px 12px 12px; text-align: left; font-weight: bold;">Total</td>
+            <td style="padding: 16px 12px 12px 12px; text-align: right; font-weight: bold;">${{total}}</td>
           </tr>
         </tbody>
       </table>
 
-      <p style="text-align: center;">
-        <a href="{{orderUrl}}" class="button">Ver Detalles del Pedido</a>
+      <p style="text-align: center; margin: 24px 0;">
+        <a href="{{orderUrl}}" style="display: inline-block; background-color: #228be6; color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 6px; font-weight: 600;">Ver Detalles del Pedido</a>
       </p>
 
-      <p>Si tienes alguna pregunta sobre tu pedido, no dudes en contactarnos.</p>
+      <p style="margin: 0 0 16px 0;">Si tienes alguna pregunta sobre tu pedido, no dudes en contactarnos.</p>
 
-      <p>Saludos,<br>El equipo de {{appName}}</p>
+      <p style="margin: 0;">Saludos,<br>El equipo de {{appName}}</p>
     </div>
 
-    <div class="footer">
-      <p>Este correo fue enviado automaticamente. Por favor no respondas a este mensaje.</p>
-      <p>&copy; {{appName}}. Todos los derechos reservados.</p>
+    <div style="text-align: center; color: #868e96; font-size: 12px; margin-top: 30px;">
+      <p style="margin: 0 0 8px 0;">Este correo fue enviado automáticamente. Por favor no respondas a este mensaje.</p>
+      <p style="margin: 0;">&copy; {{appName}}. Todos los derechos reservados.</p>
     </div>
   </div>
 </body>

@@ -20,6 +20,13 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
@@ -119,14 +126,17 @@ model CartItem {
 }
 
 model Order {
-  id        String      @id @default(uuid())
-  userId    String
-  user      User        @relation(fields: [userId], references: [id])
-  status    OrderStatus @default(PENDING)
-  total     Decimal     @db.Decimal(10, 2)
-  items     OrderItem[]
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id              String        @id @default(uuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  status          OrderStatus   @default(PENDING)
+  total           Decimal       @db.Decimal(10, 2)
+  paymentStatus   PaymentStatus @default(PENDING)
+  paymentId       String?
+  mercadoPagoId   String?       @unique
+  items           OrderItem[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   @@map("orders")
 }

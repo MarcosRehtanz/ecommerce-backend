@@ -8,6 +8,8 @@ import {
   Param,
   Query,
   UsePipes,
+  ParseIntPipe,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -115,6 +117,17 @@ export class ProductsController {
     query: QueryProductsDto,
   ) {
     return this.productsService.findAllPublic(query);
+  }
+
+  @Public()
+  @Get('best-sellers')
+  @ApiOperation({ summary: 'Obtener productos más vendidos (público)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Cantidad de productos a retornar' })
+  @ApiResponse({ status: 200, description: 'Lista de productos más vendidos' })
+  findBestSellers(
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ) {
+    return this.productsService.findBestSellers(limit);
   }
 
   @Public()
