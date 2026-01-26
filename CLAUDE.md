@@ -155,7 +155,7 @@ PostgreSQL with Prisma ORM. Schema at `backend/prisma/schema.prisma`.
 |------|-------------|
 | `docs/README.md` | Main project documentation |
 | `docs/ROADMAP.md` | Evolution plan with 6 phases |
-| `docs/EVALUACION_TECNICA.md` | Technical evaluation (8.5/10) |
+| `docs/EVALUACION_TECNICA.md` | Technical evaluation (10/10) |
 | `docs/security.md` | Security implementations |
 | `docs/payments-module.md` | MercadoPago integration |
 | `docs/cart-module.md` | Cart sync logic and truth table |
