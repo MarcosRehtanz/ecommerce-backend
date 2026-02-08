@@ -118,8 +118,8 @@ export class NotificationsService {
   async sendEmail(options: EmailOptions): Promise<boolean> {
     const { to, subject, template, context } = options;
     const fromEmail =
-      this.configService.get<string>('SMTP_FROM') || 'noreply@dynnamo.com';
-    const appName = this.configService.get<string>('APP_NAME') || 'Dynnamo';
+      this.configService.get<string>('SMTP_FROM') || 'noreply@kheiron.com';
+    const appName = this.configService.get<string>('APP_NAME') || 'Mi Tienda';
 
     try {
       const templateFn = this.getTemplate(template);
@@ -161,7 +161,7 @@ export class NotificationsService {
   async sendWelcomeEmail(name: string, email: string): Promise<boolean> {
     return this.sendEmail({
       to: email,
-      subject: 'Bienvenido a Dynnamo',
+      subject: `Bienvenido a ${this.configService.get<string>('APP_NAME') || 'Mi Tienda'}`,
       template: 'welcome',
       context: {
         name,

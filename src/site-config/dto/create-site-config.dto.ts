@@ -56,7 +56,7 @@ export class CreateSiteConfigDtoSwagger {
 
   @ApiProperty({
     example: {
-      title: 'Bienvenido a Dynnamo',
+      title: 'Bienvenido a Mi Tienda',
       subtitle: 'Tu tienda online favorita',
       imageUrl: 'https://example.com/hero.jpg',
       isVisible: true,

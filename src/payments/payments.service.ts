@@ -144,7 +144,7 @@ export class PaymentsService {
           notification_url: notificationUrl,
           auto_return: 'approved' as const,
           external_reference: orderId,
-          statement_descriptor: 'DYNNAMO',
+          statement_descriptor: 'KHEIRON',
         },
       });
 
